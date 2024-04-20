@@ -28,6 +28,7 @@ userRouter.post('/signup', async (c) => {
           email: body.email,
           password: body.password,
           name: body.name,
+          userDescription: body.userDescription,
         },
       });
       const jwtstring = c.env?.JWT_SECRET as string;

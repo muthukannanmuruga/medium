@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Label } from './Label';
 import { Inputboxwithlabel } from './Inputboxwithlabel';
-import { SignupType } from '../../../common/src/index';
+import { SignupType } from '../../../common/src';
 import { Button } from './Button';
 import { BACKEND_URL } from '../Config';
 import axios from 'axios';
@@ -11,7 +11,8 @@ export const Signupcomponent = () => {
   const [signupProps, setSignupProps] = useState<SignupType>({
     email: '',
     password: '',
-    name: ''
+    name: '',
+    userDescription: '',
   });
 
   const navigate = useNavigate();
@@ -57,6 +58,16 @@ export const Signupcomponent = () => {
                 placeholder={'John Maverick'}
                 onChange={(e) =>
                 setSignupProps({ ...signupProps, name: e.target.value })
+                }
+            />
+            </div>
+
+            <div className='pb-2'>
+            <Inputboxwithlabel
+                label={'About me'}
+                placeholder={'I am a musician...'}
+                onChange={(e) =>
+                setSignupProps({ ...signupProps, userDescription: e.target.value })
                 }
             />
             </div>

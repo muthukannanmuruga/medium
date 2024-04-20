@@ -4,6 +4,8 @@ export const signupInput = z.object({
     email: z.string().email(),
     password: z.string(),
     name: z.string().optional(),
+    userDescription:  z.string().optional()
+
 });
 
 
