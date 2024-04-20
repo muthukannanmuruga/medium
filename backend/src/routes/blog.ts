@@ -34,31 +34,88 @@ blogRouter.get('/bulk', async (c) => {
         },
       }).$extends(withAccelerate());
 	
-      const posts = await prisma.post.findMany({});
-      return c.json({
-        posts
-    });
-})
-
-
-blogRouter.get('/:id', async (c) => {
-    const id = c.req.param('id')
-    const prisma = new PrismaClient({
-        datasources: {
-          db: {
-            url: c.env?.DATABASE_URL as string,
+      try {
+        const posts = await prisma.post.findMany({
+          select: {
+            title: true,
+            published: true,
+            content: true,
+            author: {
+              select: {
+                name: true,
+              },
+            },
           },
-        },
-      }).$extends(withAccelerate());
+        });
+    
+        const formattedPosts = posts.map(post => ({
+          title: post.title,
+          publishedOn: post.published,
+          content: post.content,
+          authorName: post.author ? post.author.name || 'Anonymous' : 'Anonymous',
+        }));
+    
+        return c.json({
+          posts: formattedPosts,
+        });
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+        c.status(500);
+        return c.json({ error: 'Internal Server Error' });
+      } finally {
+        await prisma.$disconnect();
+      }
+    });
 
-    const post = await prisma.post.findUnique({
-        where: {
-            id
+
+
+
+    blogRouter.get('/:id', async (c) => {
+      const id = c.req.param('id')
+      const prisma = new PrismaClient({
+          datasources: {
+            db: {
+              url: c.env?.DATABASE_URL as string,
+            },
+          },
+        }).$extends(withAccelerate());
+  
+      const posts = await prisma.post.findUnique({
+          where: {
+              id
+            },
+  
+          select: {
+            title: true,
+            published: true,
+            content: true,
+            author: {
+              select: {
+                name: true,
+              },
+            },
           }
-	    });
-
-	return c.json(post);
-  });
+        });
+  
+      if (!posts) {
+        // Handle the case where no post with the specified ID is found
+        c.status(404);
+        return c.json({ error: 'Post not found' });
+      }
+  
+      const formattedPost = {
+        title: posts.title,
+        publishedOn: posts.published,
+        content: posts.content,
+        authorName: posts.author ? posts.author.name || 'Anonymous' : 'Anonymous',
+      };
+  
+      
+    
+      return c.json({
+        posts: formattedPost
+      });
+    });
   
 blogRouter.post('/', async (c) => {
 
@@ -77,10 +134,15 @@ blogRouter.post('/', async (c) => {
 		c.status(400);
 		return c.json({ error: "invalid input" });
 	  }
+      const currentDate = new Date();
+
+      // Format the current date and time
+      const formattedDate = formatDate(currentDate);
       const post = await prisma.post.create({
           data: {
               title: body.title,
               content: body.content,
+              published: formattedDate,
               authorId: userId
           }
       });
@@ -106,23 +168,41 @@ blogRouter.put('/', async (c) => {
 		c.status(400);
 		return c.json({ error: "invalid input" });
 	  }
-      const updatedpost = await prisma.post.update({
+    const currentDate = new Date();
+
+    // Format the current date and time
+    const formattedDate = formatDate(currentDate);
+    const updatedpost = await prisma.post.update({
 		where: {
 			id: body.id,
 			authorId: userId
 		},
 		data: {
 			title: body.title,
-			content: body.content
+			content: body.content,
+      published: formattedDate
 		}
 	});
 
 	return c.json({
         title: updatedpost.title,
-        content: updatedpost.content
+        content: updatedpost.content,
+        published: body.published
     
     });
 })
+
+function formatDate(date: Date): string {
+  // Get the individual components of the date and time
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based, so we add 1
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  // Concatenate the components to form the desired format
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
 
 
 export default blogRouter
