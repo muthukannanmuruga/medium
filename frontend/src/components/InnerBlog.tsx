@@ -50,12 +50,13 @@ export const InnerBlog = () =>
         } else {
             date = undefined;
         }
-        const authorInitial = blog?.authorName ? blog.authorName.trim().charAt(0).toUpperCase() : 'A';
+        const username = localStorage.getItem("username")
+        const  finaluserInitial = username ? username.trim().charAt(0).toUpperCase() : 'A';
 
         if(loading){
             return (
                 <div>
-                    <Appbar UserInitial={authorInitial} />
+                    <Appbar UserInitial={finaluserInitial} />
                     <OuterblogSkeleton/>
                     <OuterblogSkeleton/>
                     <OuterblogSkeleton/>
@@ -71,7 +72,7 @@ export const InnerBlog = () =>
         }
 
         return <div >
-            <Appbar UserInitial={"M"}/>
+            <Appbar UserInitial={finaluserInitial}/>
             <div className="h-auto flex flex-row justify-center mx-10 py-20">
                 <div className="w-2/3  px-5 mx-5">
                     <div className="font-extrabold text-4xl">
@@ -90,7 +91,7 @@ export const InnerBlog = () =>
                     </div>
                     <div className="flex flex-row items-center mt-2">
                         <div className="text-base font-bold text-gray-800 rounded-full h-7 w-7 flex items-center justify-center bg-gray-300">
-                            {authorInitial}
+                            {finaluserInitial}
                         </div>
                         <div className="mx-3 px-3">
                             <div className="font-semibold text-xl">
