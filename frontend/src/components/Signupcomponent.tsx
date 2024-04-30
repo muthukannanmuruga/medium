@@ -21,8 +21,11 @@ export const Signupcomponent = () => {
     try {
       const response = await axios.post(`${BACKEND_URL}/api/v1/user/signup`, signupProps);
       console.log('Sign in successful:', response.data);
-      const output = response.data.jwt
-      localStorage.setItem("token", output)
+      const jwtoutput = response.data.jwt
+      localStorage.setItem("token", jwtoutput)
+      const username = response.data.name;
+      const usernameToStore = username ? username : "Anonymous"; // Check if username is null
+      localStorage.setItem("username", usernameToStore);
       navigate("/blog")
 
     } catch (error) {

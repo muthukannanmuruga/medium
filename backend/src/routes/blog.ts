@@ -37,6 +37,7 @@ blogRouter.get('/bulk', async (c) => {
       try {
         const posts = await prisma.post.findMany({
           select: {
+            id: true,
             title: true,
             published: true,
             content: true,
@@ -49,6 +50,7 @@ blogRouter.get('/bulk', async (c) => {
         });
     
         const formattedPosts = posts.map(post => ({
+          post_id: post.id,
           title: post.title,
           publishedOn: post.published,
           content: post.content,
@@ -92,6 +94,7 @@ blogRouter.get('/bulk', async (c) => {
             author: {
               select: {
                 name: true,
+                userDescription: true
               },
             },
           }
@@ -108,6 +111,7 @@ blogRouter.get('/bulk', async (c) => {
         publishedOn: posts.published,
         content: posts.content,
         authorName: posts.author ? posts.author.name || 'Anonymous' : 'Anonymous',
+        userDescription: posts.author ? posts.author.userDescription || 'Anonymous' : 'Anonymous'
       };
   
       

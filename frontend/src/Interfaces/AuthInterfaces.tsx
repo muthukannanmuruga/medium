@@ -20,3 +20,11 @@ export interface ButtonProps{
     onClick: MouseEventHandler<HTMLButtonElement>;
 
 }
+
+export interface BlogPost {
+    post_id: string;
+    title: string;
+    content: string;
+    publishedOn: string;
+    authorName: string;
+}
