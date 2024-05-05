@@ -28,3 +28,9 @@ export interface BlogPost {
     publishedOn: string;
     authorName: string;
 }
+
+
+export interface PostBlogInput {
+    title: string,
+    content: string
+}

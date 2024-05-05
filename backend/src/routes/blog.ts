@@ -121,40 +121,58 @@ blogRouter.get('/bulk', async (c) => {
       });
     });
   
-blogRouter.post('/', async (c) => {
-
-    const userId = c.get('userId' as any);
-    const prisma = new PrismaClient({
-        datasources: {
-          db: {
-            url: c.env?.DATABASE_URL as string,
-          },
-        },
-      }).$extends(withAccelerate());
-
-      const body = await c.req.json();
-      const { success } = createPostInput.safeParse(body);
-	  if (!success) {
-		c.status(400);
-		return c.json({ error: "invalid input" });
-	  }
-      const currentDate = new Date();
-
-      // Format the current date and time
-      const formattedDate = formatDate(currentDate);
-      const post = await prisma.post.create({
-          data: {
-              title: body.title,
-              content: body.content,
-              published: formattedDate,
-              authorId: userId
+    blogRouter.post('/', async (c) => {
+      try {
+          const userId = c.get('userId' as any);
+          const prisma = new PrismaClient({
+              datasources: {
+                  db: {
+                      url: c.env?.DATABASE_URL as string,
+                  },
+              },
+          }).$extends(withAccelerate());
+  
+          const body = await c.req.text();
+          if (!body) {
+              c.status(400);
+              return c.json({ error: "Request body is empty" });
           }
-      });
-      return c.json({
-          id: post.id
-      });
-
-})
+  
+          let requestData;
+          try {
+              requestData = JSON.parse(body);
+          } catch (error) {
+              c.status(400);
+              return c.json({ error: "Invalid JSON format in request body" });
+          }
+  
+          const { success } = createPostInput.safeParse(requestData);
+          if (!success) {
+              c.status(400);
+              return c.json({ error: "Invalid input" });
+          }
+  
+          const currentDate = new Date();
+          const formattedDate = formatDate(currentDate);
+          const post = await prisma.post.create({
+              data: {
+                  title: requestData.title,
+                  content: requestData.content,
+                  published: formattedDate,
+                  authorId: userId
+              }
+          });
+  
+          return c.json({
+              id: post.id
+          });
+      } catch (error) {
+          console.error("Error creating blog post:", error);
+          
+      }
+  });
+  
+  
 
 blogRouter.put('/', async (c) => {
     const userId = c.get('userId' as any);

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Appbar } from "./Appbar";
 import axios from "axios";
 import { OuterblogSkeleton } from "./Outerblogskeleton";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
 
 interface Blog {
     userDescription: string;
@@ -13,66 +13,137 @@ interface Blog {
     // Add other properties if needed
 }
 
-export const InnerBlog = () =>
-    {   
-        const [blog, setBlog] = useState<Blog | null>(null);
-        const [loading, setLoading] = useState(true);
-        const { id } = useParams<{ id: string }>();
+export const InnerBlog = () => {
+    const [blog, setBlog] = useState<Blog | null>(null);
+    const [loading, setLoading] = useState(true);
+    const { id = '' } = useParams<{ id?: string }>(); // Provide a default value for id
+    const navigate = useNavigate(); // useNavigate hook
+    const [blogIds, setBlogIds] = useState<string[]>([]);
 
-        useEffect(() => {
-            const fetchBlog = async () => {
-                try {
-                    const response = await axios.get(`https://backend.mediumapp.workers.dev/api/v1/blog/${id}`, {
+    useEffect(() => {
+        const fetchBlog = async () => {
+            try {
+                const response = await axios.get(
+                    `https://backend.mediumapp.workers.dev/api/v1/blog/${id}`,
+                    {
                         headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`
-                        }
-                    });
-                   
-                    if (response.status === 200) {
-                        setBlog(response.data.posts); // Assuming the response data is the blog object
-                    } else {
-                        console.error('Failed to fetch blog:', response.statusText);
+                            Authorization: `Bearer ${localStorage.getItem(
+                                "token"
+                            )}`,
+                        },
                     }
-                } catch (error) {
-                    console.error('Error fetching blog:', error);
-                } finally {
-                    setLoading(false);
+                );
+
+                if (response.status === 200) {
+                    setBlog(response.data.posts);
+                } else {
+                    console.error(
+                        "Failed to fetch blog:",
+                        response.statusText
+                    );
                 }
-            };
+            } catch (error) {
+                console.error("Error fetching blog:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-            fetchBlog();
-        }, []);
+        const fetchBlogIds = async () => {
+            try {
+                const response = await axios.get(
+                    "https://backend.mediumapp.workers.dev/api/v1/blog/bulk",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem(
+                                "token"
+                            )}`,
+                        },
+                    }
+                );
+        
+                if (response.status === 200) {
+                    const ids = response.data.posts.map(
+                        (post: { post_id: string }) => post.post_id
+                    );
+                    // Sort the IDs in descending order
+                    const sortedIds = ids.sort((a: string, b: string) => {
+                        const dateA = new Date(a);
+                        const dateB = new Date(b);
+                        return dateB.getTime() - dateA.getTime();
+                    });
+                    setBlogIds(sortedIds);
+                } else {
+                    console.error(
+                        "Failed to fetch blog IDs:",
+                        response.statusText
+                    );
+                }
+            } catch (error) {
+                console.error("Error fetching blog IDs:", error);
+            }
+        };
+        fetchBlog();
+        fetchBlogIds();
+    }, [id]);
 
-        let publishedDate = blog?.publishedOn?.split(' ');
-        let date: string | undefined;
-        if (publishedDate && publishedDate.length > 0) {
-            date = publishedDate[0];
-        } else {
-            date = undefined;
-        }
-        const username = localStorage.getItem("username")
-        const  finaluserInitial = username ? username.trim().charAt(0).toUpperCase() : 'A';
+    let publishedDate = blog?.publishedOn?.split(" ");
+    let date: string | undefined;
+    if (publishedDate && publishedDate.length > 0) {
+        date = publishedDate[0];
+    } else {
+        date = undefined;
+    }
+    const username = localStorage.getItem("username");
+    const finaluserInitial = username
+        ? username.trim().charAt(0).toUpperCase()
+        : "A";
 
-        if(loading){
-            return (
-                <div>
-                    <Appbar UserInitial={finaluserInitial} />
-                    <OuterblogSkeleton/>
-                    <OuterblogSkeleton/>
-                    <OuterblogSkeleton/>
-                    <OuterblogSkeleton/>
-                    <OuterblogSkeleton/>
-                    
-                </div>
-                   
-            );
-        }
-        if (!blog) {
-            return <div className='flex flex-row justify-center h-screen items-center font-extrabold '>No blogs found</div>
-        }
+    const goToPrevious = () => {
+        const currentIndex = blogIds.indexOf(id);
+        const previousIndex =
+            currentIndex > 0 ? currentIndex - 1 : blogIds.length - 1;
+        navigate(`/blog/${blogIds[previousIndex]}`); // Use navigate to go to previous
 
-        return <div >
-            <Appbar UserInitial={finaluserInitial}/>
+    };
+
+    const goToNext = () => {
+        const currentIndex = blogIds.indexOf(id);
+        const nextIndex =
+            currentIndex < blogIds.length - 1 ? currentIndex + 1 : 0;
+        navigate(`/blog/${blogIds[nextIndex]}`); // Use navigate to go to next
+     
+    };
+
+    // Disable previous button when there is no previous post
+    const isPreviousDisabled = blogIds.indexOf(id) === 0;
+
+    // Disable next button when there is no next post
+    const isNextDisabled = blogIds.indexOf(id) === blogIds.length - 1;
+
+    if (loading) {
+        return (
+            <div>
+                <Appbar UserInitial={finaluserInitial} />
+                <OuterblogSkeleton />
+                <OuterblogSkeleton />
+                <OuterblogSkeleton />
+                <OuterblogSkeleton />
+                <OuterblogSkeleton />
+            </div>
+        );
+    }
+    if (!blog) {
+        return (
+            <div className="flex flex-row justify-center h-screen items-center font-extrabold ">
+                No blogs found
+            </div>
+        );
+    }
+
+    return (
+        <div>
+            <Appbar UserInitial={finaluserInitial} />
             <div className="h-auto flex flex-row justify-center mx-10 py-20">
                 <div className="w-2/3  px-5 mx-5">
                     <div className="font-extrabold text-4xl">
@@ -86,9 +157,7 @@ export const InnerBlog = () =>
                     </div>
                 </div>
                 <div className="w-1/3">
-                    <div className="font-bold text-gray-800">
-                        Author
-                    </div>
+                    <div className="font-bold text-gray-800">Author</div>
                     <div className="flex flex-row items-center mt-2">
                         <div className="text-base font-bold text-gray-800 rounded-full h-7 w-7 flex items-center justify-center bg-gray-300">
                             {finaluserInitial}
@@ -104,6 +173,11 @@ export const InnerBlog = () =>
                     </div>
                 </div>
             </div>
-    
+            <div className="flex justify-between mx-10">
+        
+                <button className={`text-white bg-gray-900 hover:bg-gray-700  font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 ${isNextDisabled ? 'cursor-not-allowed' : ''}`}  onClick={goToPrevious} disabled={isPreviousDisabled}>Previous</button>
+                <button className={`text-white bg-gray-900 hover:bg-gray-700  font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 ${isNextDisabled ? 'cursor-not-allowed' : ''}`}  onClick={goToNext} disabled={isNextDisabled}>Next</button>
+            </div>
         </div>
-    }
+    );
+};
