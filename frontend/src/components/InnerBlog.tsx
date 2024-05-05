@@ -175,7 +175,7 @@ export const InnerBlog = () => {
             </div>
             <div className="flex justify-between mx-10">
         
-                <button className={`text-white bg-gray-900 hover:bg-gray-700  font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 ${isNextDisabled ? 'cursor-not-allowed' : ''}`}  onClick={goToPrevious} disabled={isPreviousDisabled}>Previous</button>
+                <button className={`text-white bg-gray-900 hover:bg-gray-700  font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 ${isPreviousDisabled ? 'cursor-not-allowed' : ''}`}  onClick={goToPrevious} disabled={isPreviousDisabled}>Previous</button>
                 <button className={`text-white bg-gray-900 hover:bg-gray-700  font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 ${isNextDisabled ? 'cursor-not-allowed' : ''}`}  onClick={goToNext} disabled={isNextDisabled}>Next</button>
             </div>
         </div>
