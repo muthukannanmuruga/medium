@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Label } from './Label';
 import { Inputboxwithlabel } from './Inputboxwithlabel';
-import { SignupType } from '../../../common/src';
+import { SignupType } from 'mk-mediumapp-common/dist';
 import { Button } from './Button';
 import { BACKEND_URL } from '../Config';
 import axios from 'axios';
