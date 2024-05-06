@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Label } from './Label';
 import { Inputboxwithlabel } from './Inputboxwithlabel';
 import { SignupType } from '../../../common/src';

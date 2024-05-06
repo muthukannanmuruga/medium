@@ -22,9 +22,6 @@ export const Appbar = ({ UserInitial }: { UserInitial: string }) => {
     router('/signin');
   };
 
-  const closeDropdown = () => {
-    setIsDropdownOpen(false);
-  };
 
   useEffect(() => {
     // Close dropdown when clicking outside of it

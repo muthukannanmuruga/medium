@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { Appbar } from "./Appbar";
 
-export const Outerblog = ({title, content, publishedOn, User, postid}) => {   
+
+export const Outerblog = ({title, content, publishedOn, User, postid}:{title: string, content: string, publishedOn: string, User: string, postid: string}) => {   
     const publishedDate = publishedOn ? publishedOn.split(' ') : ['']; // Split only if publishedOn is not null or undefined
     const date = publishedDate[0];
     const UserInitial = User ? User.trim().charAt(0).toUpperCase() : 'A';
