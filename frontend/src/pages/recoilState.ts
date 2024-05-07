@@ -13,7 +13,8 @@ export const signupisLoadingState = atom({
   });
   
 
-  export const usernameToStoreinrecoil = atom({
+export const usernameToStoreinrecoil = atom({
     key: 'usernameToStoreinrecoil',
     default: '',
   });
+

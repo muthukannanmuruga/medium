@@ -3,6 +3,9 @@ import { Appbar } from "./Appbar";
 import axios from "axios";
 import { OuterblogSkeleton } from "./Outerblogskeleton";
 import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
+import { usernameToStoreinrecoil } from "../pages/recoilState";
+import { useRecoilValue } from "recoil";
+
 
 interface Blog {
     userDescription: string;
@@ -19,10 +22,14 @@ export const InnerBlog = () => {
     const { id = '' } = useParams<{ id?: string }>(); // Provide a default value for id
     const navigate = useNavigate(); // useNavigate hook
     const [blogIds, setBlogIds] = useState<string[]>([]);
+    const [blogLoading, setBlogLoading] = useState(false);
+    
+    
 
     useEffect(() => {
         const fetchBlog = async () => {
             try {
+                setBlogLoading(true);
                 const response = await axios.get(
                     `https://backend.mediumapp.workers.dev/api/v1/blog/${id}`,
                     {
@@ -46,6 +53,7 @@ export const InnerBlog = () => {
                 console.error("Error fetching blog:", error);
             } finally {
                 setLoading(false);
+                setBlogLoading(false);
             }
         };
 
@@ -87,6 +95,7 @@ export const InnerBlog = () => {
         fetchBlogIds();
     }, [id]);
 
+    
     let publishedDate = blog?.publishedOn?.split(" ");
     let date: string | undefined;
     if (publishedDate && publishedDate.length > 0) {
@@ -94,12 +103,14 @@ export const InnerBlog = () => {
     } else {
         date = undefined;
     }
-    const username = localStorage.getItem("username");
-    const finaluserInitial = username
-        ? username.trim().charAt(0).toUpperCase()
-        : "A";
+    const recoilUsername = useRecoilValue(usernameToStoreinrecoil)
+    //const username = localStorage.getItem("username")
+    const  finaluserInitial = recoilUsername ? recoilUsername.trim().charAt(0).toUpperCase() : 'A';
+    
 
     const goToPrevious = () => {
+        setBlogLoading(true)
+        console.log(blogLoading)
         const currentIndex = blogIds.indexOf(id);
         const previousIndex =
             currentIndex > 0 ? currentIndex - 1 : blogIds.length - 1;
@@ -108,6 +119,8 @@ export const InnerBlog = () => {
     };
 
     const goToNext = () => {
+        setBlogLoading(true)
+        console.log(blogLoading)
         const currentIndex = blogIds.indexOf(id);
         const nextIndex =
             currentIndex < blogIds.length - 1 ? currentIndex + 1 : 0;
@@ -121,7 +134,7 @@ export const InnerBlog = () => {
     // Disable next button when there is no next post
     const isNextDisabled = blogIds.indexOf(id) === blogIds.length - 1;
 
-    if (loading) {
+    if (loading || blogLoading) {
         return (
             <div>
                 <Appbar UserInitial={finaluserInitial} />
@@ -160,7 +173,7 @@ export const InnerBlog = () => {
                     <div className="font-bold text-gray-800">Author</div>
                     <div className="flex flex-row items-center mt-2">
                         <div className="text-base font-bold text-gray-800 rounded-full h-7 w-7 flex items-center justify-center bg-gray-300">
-                            {finaluserInitial}
+                            {blog.authorName ? blog.authorName.trim().charAt(0).toUpperCase() : 'A'}
                         </div>
                         <div className="mx-3 px-3">
                             <div className="font-semibold text-xl">
