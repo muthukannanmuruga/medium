@@ -7,16 +7,23 @@ import axios from 'axios';
 import { BACKEND_URL } from '../Config';
 import { useNavigate } from 'react-router-dom';
 
+import { useRecoilState } from 'recoil';
+import { isLoadingState } from '../pages/recoilState';
+
 export const Signincomponent = () => {
   const [signinProps, setSigninProps] = useState<SigninType>({
     email: '',
     password: '',
   });
 
+  // @ts-ignore
+  const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
+
   const navigate = useNavigate();
 
   const handleSignIn = async () => {
     try {
+      setIsLoading(true);
       const response = await axios.post(`${BACKEND_URL}/api/v1/user/signin`, signinProps);
       console.log('Sign in successful:', response.data);
       // Do something with the response, such as redirecting to another page
@@ -30,6 +37,8 @@ export const Signincomponent = () => {
     } catch (error) {
       console.error('Error signing in:', error);
       // Handle error, such as displaying an error message to the user
+    } finally {
+      setIsLoading(false); // Set isLoading to false when sign-in process completes
     }
   };
 

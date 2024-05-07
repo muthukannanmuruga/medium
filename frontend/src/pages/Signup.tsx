@@ -1,8 +1,30 @@
+import { useRecoilValue } from "recoil";
+import { Appbar } from "../components/Appbar";
+import { OuterblogSkeleton } from "../components/Outerblogskeleton";
 import { Quote } from "../components/Quote"
 import { Signupcomponent } from "../components/Signupcomponent"
+import { signupisLoadingState } from "./recoilState";
 
 export const Signup = () =>
-{
+{   
+    const signupisLoading = useRecoilValue(signupisLoadingState);
+    const username = localStorage.getItem("username")
+    const  finaluserInitial = username ? username.trim().charAt(0).toUpperCase() : 'A';
+    if (signupisLoading) {
+        return (
+            <div>
+                {/* Render the app bar with the user initials */}
+                <Appbar UserInitial={finaluserInitial} />
+
+                {/* Render skeleton components while loading */}
+                <OuterblogSkeleton />
+                <OuterblogSkeleton />
+                <OuterblogSkeleton />
+                <OuterblogSkeleton />
+                <OuterblogSkeleton />
+            </div>
+        );
+    } else {
     return <div>
         
         <div className="grid grid-cols-1 md:grid-cols-2">
@@ -22,4 +44,5 @@ export const Signup = () =>
         
 
     </div>
+    }
 }

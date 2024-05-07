@@ -6,6 +6,8 @@ import { Button } from './Button';
 import { BACKEND_URL } from '../Config';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { signupisLoadingState } from '../pages/recoilState';
 
 export const Signupcomponent = () => {
   const [signupProps, setSignupProps] = useState<SignupType>({
@@ -16,9 +18,12 @@ export const Signupcomponent = () => {
   });
 
   const navigate = useNavigate();
+  // @ts-ignore
+  const [signupisLoading, setSignupIsLoading] = useRecoilState(signupisLoadingState);
 
   const handleSignup = async () => {
     try {
+      setSignupIsLoading(true)
       const response = await axios.post(`${BACKEND_URL}/api/v1/user/signup`, signupProps);
       console.log('Sign in successful:', response.data);
       const jwtoutput = response.data.jwt
@@ -31,6 +36,8 @@ export const Signupcomponent = () => {
     } catch (error) {
       console.error('Error signing in:', error);
       // Handle error, such as displaying an error message to the user
+    } finally {
+      setSignupIsLoading(false); // Set isLoading to false when sign-in process completes
     }
   };
 
