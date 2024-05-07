@@ -1,14 +1,16 @@
 import { Quote } from "../components/Quote";
 import { Signincomponent } from '../components/Signincomponent';
 import { useRecoilValue } from 'recoil';
-import { isLoadingState } from './recoilState';
+import { isLoadingState, usernameToStoreinrecoil } from './recoilState';
 import { OuterblogSkeleton } from '../components/Outerblogskeleton';
 import { Appbar } from '../components/Appbar';
 
 export const Signin = () => {
     const isLoading = useRecoilValue(isLoadingState);
-    const username = localStorage.getItem("username")
-    const  finaluserInitial = username ? username.trim().charAt(0).toUpperCase() : 'A';
+    const recoilUsername = useRecoilValue(usernameToStoreinrecoil)
+    //const username = localStorage.getItem("username")
+    const  finaluserInitial = recoilUsername ? recoilUsername.trim().charAt(0).toUpperCase() : 'A';
+
     if (isLoading) {
         return (
             <div>

@@ -8,7 +8,10 @@ import { BACKEND_URL } from '../Config';
 import { useNavigate } from 'react-router-dom';
 
 import { useRecoilState } from 'recoil';
+
 import { isLoadingState } from '../pages/recoilState';
+import {usernameToStoreinrecoil} from '../pages/recoilState';
+
 
 export const Signincomponent = () => {
   const [signinProps, setSigninProps] = useState<SigninType>({
@@ -18,6 +21,8 @@ export const Signincomponent = () => {
 
   // @ts-ignore
   const [isLoading, setIsLoading] = useRecoilState(isLoadingState);
+  // @ts-ignore
+  const [recoilUsername, setRecoilUsername] = useRecoilState(usernameToStoreinrecoil);
 
   const navigate = useNavigate();
 
@@ -30,8 +35,9 @@ export const Signincomponent = () => {
       const jwtoutput = response.data.jwt
       localStorage.setItem("token", jwtoutput)
       const username = response.data.name;
-      const usernameToStore = username ? username : "Anonymous"; // Check if username is null
-      localStorage.setItem("username", usernameToStore);
+      const usernameToStore = username.name ? username.name : "Anonymous"; // Check if username is null
+      setRecoilUsername(usernameToStore)
+      //localStorage.setItem("username", usernameToStore);
       navigate("/blog")
       
     } catch (error) {

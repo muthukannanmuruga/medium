@@ -3,13 +3,15 @@ import { Appbar } from "../components/Appbar";
 import { OuterblogSkeleton } from "../components/Outerblogskeleton";
 import { Quote } from "../components/Quote"
 import { Signupcomponent } from "../components/Signupcomponent"
-import { signupisLoadingState } from "./recoilState";
+import { signupisLoadingState, usernameToStoreinrecoil } from "./recoilState";
 
 export const Signup = () =>
 {   
     const signupisLoading = useRecoilValue(signupisLoadingState);
-    const username = localStorage.getItem("username")
-    const  finaluserInitial = username ? username.trim().charAt(0).toUpperCase() : 'A';
+    const recoilUsername = useRecoilValue(usernameToStoreinrecoil)
+
+    //const username = localStorage.getItem("username")
+    const  finaluserInitial = recoilUsername ? recoilUsername.trim().charAt(0).toUpperCase() : 'A';
     if (signupisLoading) {
         return (
             <div>

@@ -1,12 +1,16 @@
 import PostBlog from "../components/PostBlog";
 import { Appbar } from "../components/Appbar";
 
+import { useRecoilValue } from 'recoil';
+import { usernameToStoreinrecoil } from './recoilState';
+
 
 
 export const PostBlogPage = () => {
 
-    const username = localStorage.getItem("username")
-    const  finaluserInitial = username ? username.trim().charAt(0).toUpperCase() : 'A';
+    const recoilUsername = useRecoilValue(usernameToStoreinrecoil)
+    //const username = localStorage.getItem("username")
+    const  finaluserInitial = recoilUsername ? recoilUsername.trim().charAt(0).toUpperCase() : 'A';
 
 
     return <>

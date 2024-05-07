@@ -4,6 +4,8 @@ import { Appbar } from "../components/Appbar";
 import { Outerblog } from "../components/Outerblog";
 import { BlogPost } from "../Interfaces/AuthInterfaces"
 import { OuterblogSkeleton } from '../components/Outerblogskeleton';
+import { useRecoilValue } from 'recoil';
+import { usernameToStoreinrecoil } from './recoilState';
 
 export const Blog = () => {
     const [blogs, setBlogs] = useState<BlogPost[]>([]); // Specify the type as BlogPost[]
@@ -60,8 +62,9 @@ export const Blog = () => {
         fetchBlogs();
     }, []);
 
-    const username = localStorage.getItem("username")
-    const  finaluserInitial = username ? username.trim().charAt(0).toUpperCase() : 'A';
+    const recoilUsername = useRecoilValue(usernameToStoreinrecoil)
+    //const username = localStorage.getItem("username")
+    const  finaluserInitial = recoilUsername ? recoilUsername.trim().charAt(0).toUpperCase() : 'A';
 
     if (loading) {
         return (

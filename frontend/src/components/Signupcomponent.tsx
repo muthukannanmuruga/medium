@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { signupisLoadingState } from '../pages/recoilState';
+import {usernameToStoreinrecoil} from '../pages/recoilState';
 
 export const Signupcomponent = () => {
   const [signupProps, setSignupProps] = useState<SignupType>({
@@ -20,17 +21,20 @@ export const Signupcomponent = () => {
   const navigate = useNavigate();
   // @ts-ignore
   const [signupisLoading, setSignupIsLoading] = useRecoilState(signupisLoadingState);
+  // @ts-ignore
+  const [recoilUsername, setRecoilUsername] = useRecoilState(usernameToStoreinrecoil);
 
   const handleSignup = async () => {
     try {
       setSignupIsLoading(true)
       const response = await axios.post(`${BACKEND_URL}/api/v1/user/signup`, signupProps);
-      console.log('Sign in successful:', response.data);
+      console.log('Sign up successful:', response.data);
       const jwtoutput = response.data.jwt
       localStorage.setItem("token", jwtoutput)
       const username = response.data.name;
-      const usernameToStore = username ? username : "Anonymous"; // Check if username is null
-      localStorage.setItem("username", usernameToStore);
+      const usernameToStore = username.name ? username.name : "Anonymous";
+      setRecoilUsername(usernameToStore)
+      //localStorage.setItem("username", usernameToStore);
       navigate("/blog")
 
     } catch (error) {
