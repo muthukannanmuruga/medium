@@ -109,30 +109,26 @@ export const InnerBlog = () => {
     
 
     const goToPrevious = () => {
-        setBlogLoading(true)
-        console.log(blogLoading)
+        setBlogLoading(true);
         const currentIndex = blogIds.indexOf(id);
         const previousIndex =
-            currentIndex > 0 ? currentIndex - 1 : blogIds.length - 1;
-        navigate(`/blog/${blogIds[previousIndex]}`); // Use navigate to go to previous
-
+            currentIndex < blogIds.length - 1 ? currentIndex + 1 : 0; // Move to the next post in descending order
+        navigate(`/blog/${blogIds[previousIndex]}`);
     };
-
+    
     const goToNext = () => {
-        setBlogLoading(true)
-        console.log(blogLoading)
+        setBlogLoading(true);
         const currentIndex = blogIds.indexOf(id);
         const nextIndex =
-            currentIndex < blogIds.length - 1 ? currentIndex + 1 : 0;
-        navigate(`/blog/${blogIds[nextIndex]}`); // Use navigate to go to next
-     
+            currentIndex > 0 ? currentIndex - 1 : blogIds.length - 1; // Move to the previous post in descending order
+        navigate(`/blog/${blogIds[nextIndex]}`);
     };
-
-    // Disable previous button when there is no previous post
-    const isPreviousDisabled = blogIds.indexOf(id) === 0;
-
-    // Disable next button when there is no next post
-    const isNextDisabled = blogIds.indexOf(id) === blogIds.length - 1;
+    
+    // Disable previous button when there are no next posts or only one post available
+    const isPreviousDisabled = blogIds.length <= 1 || blogIds.indexOf(id) === blogIds.length - 1;
+    
+    // Disable next button when there are no previous posts or only one post available
+    const isNextDisabled = blogIds.length <= 1 || blogIds.indexOf(id) === 0;
 
     if (loading || blogLoading) {
         return (

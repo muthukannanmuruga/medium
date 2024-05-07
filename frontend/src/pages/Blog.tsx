@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Appbar } from "../components/Appbar";
 import { Outerblog } from "../components/Outerblog";
@@ -20,35 +20,8 @@ export const Blog = () => {
                     }
                 });
                 if (response.status === 200) {
-                    const sortedBlogs = response.data.posts.sort((a: BlogPost, b: BlogPost) => {
-                    // Convert publishedOn strings to Date objects
-                    const dateA = a.publishedOn ? new Date(a.publishedOn) : null;
-                    const dateB = b.publishedOn ? new Date(b.publishedOn) : null;
-
-                    // Handle cases where publishedOn dates are null or undefined
-                    if (!dateA && !dateB) {
-                        return 0; // No change in order if both are null or undefined
-                    } else if (!dateA) {
-                        return 1; // Move a to the end if its publishedOn is null or undefined
-                    } else if (!dateB) {
-                        return -1; // Move b to the end if its publishedOn is null or undefined
-                    }
-
-                    // Get today's date
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0); // Set time to midnight for comparison
-
-                    // Compare publishedOn dates
-                    if (dateA.toDateString() === today.toDateString()) {
-                        return -1; // Move a to the beginning if its publishedOn is today
-                    } else if (dateB.toDateString() === today.toDateString()) {
-                        return 1; // Move b to the beginning if its publishedOn is today
-                    }
-
-                    // Sort by publishedOn date in descending order
-                    return dateB.getTime() - dateA.getTime();
-                });
-                    setBlogs(sortedBlogs);
+                    const sortedBlogs = response.data.posts; // Already sorted in ascending order
+                    setBlogs(sortedBlogs.reverse()); // Reverse the order of the sorted blogs array
                 } else {
                     console.error('Failed to fetch blogs:', response.statusText);
                 }
@@ -63,8 +36,7 @@ export const Blog = () => {
     }, []);
 
     const recoilUsername = useRecoilValue(usernameToStoreinrecoil)
-    //const username = localStorage.getItem("username")
-    const  finaluserInitial = recoilUsername ? recoilUsername.trim().charAt(0).toUpperCase() : 'A';
+    const finaluserInitial = recoilUsername ? recoilUsername.trim().charAt(0).toUpperCase() : 'A';
 
     if (loading) {
         return (
@@ -100,3 +72,5 @@ export const Blog = () => {
         </div>
     );
 };
+
+export default Blog;
