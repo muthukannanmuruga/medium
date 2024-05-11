@@ -43,7 +43,7 @@ export const Appbar = ({ UserInitial }: { UserInitial: string }) => {
   return (
     <div className="px-10 my-5 border-b border-gray-150 pb-5 mb-10 flex justify-between items-center">
       <div className="font-semibold cursor-pointer">
-        <Link to={'/blog'}>Medium</Link>
+        <Link to={'/blog'}>MK Blogs</Link>
       </div>
       <div className="flex items-center space-x-4">
         <button

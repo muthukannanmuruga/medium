@@ -36,9 +36,9 @@ export const Signup = () =>
 
             <div className="hidden md:block">
                 <Quote 
-                Quote={"\"The Customer service I received was exceptional. The support team went above and beyond to address my concerns.\""} 
-                Author= {"Jules Winnfield"} 
-                Designation={"CEO, Acme Inc"}
+                Quote={"\"I have no special talent. I am only passionately curious\""} 
+                Author= {"Albert Einstein"} 
+                Designation={"Scientist"}
                 />
             </div>
 
