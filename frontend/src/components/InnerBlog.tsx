@@ -27,6 +27,7 @@ export const InnerBlog = () => {
     
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         const fetchBlog = async () => {
             try {
                 setBlogLoading(true);
